@@ -1,0 +1,1891 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Pull-Up Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        /* Haupt-Tabs */
+        .tabs {
+            display: flex;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab {
+            padding: 14px 20px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: background-color 0.3s;
+        }
+        .tab:hover {
+            background-color: #ddd;
+        }
+        .tab.active {
+            border-bottom: 2px solid #4CAF50;
+            background-color: #e0e0e0;
+        }
+        /* Sub-Tabs */
+        .sub-tabs {
+            display: flex;
+            background-color: #e2e2e2;
+            border-bottom: 1px solid #ccc;
+        }
+        .sub-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: background-color 0.3s;
+        }
+        .sub-tab:hover {
+            background-color: #ccc;
+        }
+        .sub-tab.active {
+            border-bottom: 2px solid #2196F3;
+            background-color: #d0d0d0;
+        }
+        /* Inhalt */
+        .content {
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .info-icon {
+            display: inline-block;
+            margin-left: 5px;
+            color: #555;
+            cursor: pointer;
+            font-weight: bold;
+            position: relative;
+        }
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            top: 25px;
+            left: 0;
+            z-index: 1;
+            white-space: nowrap;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .input-group label {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            padding: 8px;
+            width: 200px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .buttons {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .buttons img {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .timer {
+            font-size: 20px;
+            margin: 15px 0;
+            color: #333;
+        }
+        .timer-buttons button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #ddd;
+            transition: background-color 0.3s;
+        }
+        .timer-buttons button:hover {
+            background-color: #ccc;
+        }
+        .calculated-field {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        .button-info {
+            margin-left: 10px;
+            color: #555;
+            cursor: pointer;
+            font-weight: bold;
+            position: relative;
+        }
+        .step {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-decoration: underline;
+        }
+        /* Kleinere Buttons für Timer-Steuerung */
+        .small-button {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        /* Abstand zwischen Elementen */
+        .spaced {
+            margin-bottom: 25px;
+        }
+        /* Styling für Trainingsfelder */
+        .training-field {
+            margin-bottom: 20px;
+        }
+        .training-field label {
+            font-size: 16px;
+            font-weight: normal;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .readonly-input {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 8px;
+            width: 220px;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .formula {
+            font-size: 16px;
+            margin: 0 5px;
+        }
+        .training-section {
+            margin-bottom: 30px;
+        }
+        .erlaeuterung-button {
+            margin-left: 10px;
+            padding: 4px 8px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #2196F3;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .erlaeuterung-button:hover {
+            background-color: #0b7dda;
+        }
+        .erlaeuterung-text {
+            display: none;
+            margin-top: 5px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        .erledigt-button {
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        .erledigt-button:hover {
+            background-color: #45a049;
+        }
+        .zuruecksetzen-button {
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #f44336;
+            color: white;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .zuruecksetzen-button:hover {
+            background-color: #da190b;
+        }
+        /* Pull Hang Timer Styles */
+        .pull-hang-timer {
+            margin-top: 20px;
+        }
+        .pull-hang-timer button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .pull-hang-timer button:hover {
+            background-color: #45a049;
+        }
+        .pull-hang-timer button.disabled {
+            background-color: #a5d6a7;
+            cursor: not-allowed;
+        }
+        .stop-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #f44336;
+            color: white;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .stop-button:hover {
+            background-color: #da190b;
+        }
+        .timer-reset-button {
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #ff9800;
+            color: white;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+            display: none;
+        }
+        .timer-reset-button:hover {
+            background-color: #e68900;
+        }
+        .stopwatch {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+
+
+<body>
+
+<header>
+    Pull-Up Helper
+</header>
+
+<!-- Haupt-Tabs -->
+<div class="tabs">
+    <div class="tab active" data-tab="week1">1. Woche</div>
+    <div class="tab" data-tab="week2">2. Woche</div>
+    <div class="tab" data-tab="week3">3. Woche</div>
+    <div class="tab" data-tab="week4">4. Woche</div>
+    <div class="tab" data-tab="week5">5. Woche</div>
+    <div class="tab" data-tab="finalTest">Final Test</div>
+</div>
+
+<!-- Inhalte der Haupt-Tabs -->
+<div class="content">
+    <!-- Woche 1 -->
+    <div id="week1" class="week-content">
+        <!-- Sub-Tabs -->
+        <div class="sub-tabs">
+            <div class="sub-tab active" data-subtab="test1">Test</div>
+            <div class="sub-tab" data-subtab="training1">Training</div>
+        </div>
+        <!-- Sub-Tab Inhalte -->
+        <div class="sub-content">
+            <!-- Test Sub-Tab -->
+            <div class="subtab-content" id="test1" style="display: block;">
+                <!-- 1. Schritt -->
+                <div class="step">1. Schritt</div>
+                <!-- 1-Set Max -->
+                <div class="input-group spaced">
+                    <label for="setMax1">1-Set Max.
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip1_1')">Erläuterung</button>
+<div id="erlaeuterungTooltip1_1" class="erlaeuterung-text">
+    Mache so viele Wiederholungen wie du kannst am Stück
+</div>
+
+                        </span>
+                    </label>
+                    <input type="number" id="setMax1" placeholder="Wdh." >
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmSetMax(1)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetSetMax(1)">
+                    </div>
+                </div>
+                <!-- 2-Minuten Timer -->
+                <div id="timer2min_1" class="timer hidden spaced">2:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung -->
+                <div class="timer-buttons hidden spaced" id="timer2minButtons_1">
+                    <button class="small-button" onclick="pauseTimer(1)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer(1)">Resume</button>
+                    <button class="small-button" onclick="reset2MinTimer(1)">Reset</button>
+                    <button class="small-button" onclick="skip2MinTimer(1)">Skip</button>
+                </div>
+                <!-- 2. Schritt -->
+                <div class="step">2. Schritt
+                    <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip2_1')">Erläuterung</button>
+<div id="erlaeuterungTooltip2_1" class="erlaeuterung-text">
+    Mache nun so viele Wiederholungen mit Pausen in 5 Minuten wie du kannst
+</div>
+                </div>
+                <!-- Start Button für 5-Minuten Timer -->
+                <button id="start5min_1" class="hidden spaced" onclick="start5MinTimer(1)">Start</button>
+                <!-- 5-Minuten Timer -->
+                <div id="timer5min_1" class="timer hidden spaced">5:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung für 5-Minuten Timer -->
+                <div class="timer-buttons hidden spaced" id="timer5minButtons_1">
+                    <button class="small-button" onclick="pauseTimer5(1)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer5(1)">Resume</button>
+                    <button class="small-button" onclick="reset5MinTimer(1)">Reset</button>
+                    <button class="small-button" onclick="skip5MinTimer(1)">Skip</button>
+                </div>
+                <!-- Gesamt Wiederholungen -->
+                <div class="input-group spaced">
+                    <label for="totalReps1">Gesamt Wdh. in 5 Min.</label>
+                    <input type="number" id="totalReps1" placeholder="Wdh." disabled>
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmTotalReps(1)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetTotalReps(1)">
+                    </div>
+                </div>
+                <!-- Automatisch berechnetes Feld -->
+                <div class="calculated-field" id="calculatedValue1"></div>
+            </div>
+            <!-- Training Sub-Tab -->
+            <div class="subtab-content" id="training1" style="display: none;">
+                <!-- Tag 1 -->
+                <div class="step training-section">Tag 1</div>
+                <!-- 1.Schritt Woche 1 -->
+                <div class="training-field spaced">
+                    <label for="training1_step1">1.Schritt Woche 1</label>
+                    <input type="number" id="training1_step1" class="readonly-input" readonly>
+                    <div style="margin-top: 5px; font-size: 14px;">1-Set Max. Test Woche (1)</div>
+                </div>
+                <!-- Chin-Up Ziel -->
+                <div class="training-field spaced">
+                    <label for="training1_chinUp">Chin-Up Ziel</label>
+                    <div>
+                        <span class="formula">x 2 = </span>
+                        <input type="number" id="training1_chinUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training1_chinUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training1_chinUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Chin-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- 2. Schritt Woche 1 -->
+                <div class="training-field spaced">
+                    <label for="training1_step2">2. Schritt Woche 1</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="number" id="training1_step2" class="readonly-input" readonly>
+                        <span class="formula">+ 40% = Pull-Up Ziel</span>
+                        <input type="number" id="training1_pullUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training1_pullUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training1_pullUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- Erledigt Button und Tag 2 zurücksetzen Button -->
+                <button class="erledigt-button" onclick="markTag1Erledigt(1)">Erledigt</button>
+                <button class="zuruecksetzen-button" onclick="resetTag2(1)">Tag 2 zurücksetzen</button>
+                
+                <!-- Tag 2 (initially hidden) -->
+                <div id="tag2_1" class="training-section hidden">
+                    <div class="step">Tag 2</div>
+                    <!-- 1.2. Schritt Woche 1 -->
+                    <div class="training-field spaced">
+                        <label for="training1_step2_1">1.2. Schritt Woche 1</label>
+                        <input type="number" id="training1_step2_1" class="readonly-input" readonly>
+                    </div>
+                    <!-- Commando Pull-Up Ziel -->
+                    <div class="training-field spaced">
+                        <label for="training1_commandoPullUp">Commando Pull-Up Ziel</label>
+                        <div>
+                            <span class="formula">x 2 = </span>
+                            <input type="number" id="training1_commandoPullUp" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training1_commandoPullUp_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training1_commandoPullUp_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Commando Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- 2.1. Schritt Woche 1 -->
+                    <div class="training-field spaced">
+                        <label for="training1_step2_1_plus">2.1. Schritt Woche 1</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training1_step2_1_plus" class="readonly-input" readonly>
+                            <span class="formula">+ 50% = Pull-Up Ziel</span>
+                            <input type="number" id="training1_pullUp_plus" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training1_pullUp_plus_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training1_pullUp_plus_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- Erledigt Button und Tag 3 zurücksetzen Button -->
+                    <button class="erledigt-button" onclick="markTag2Erledigt(1)">Erledigt</button>
+                    <button class="zuruecksetzen-button" onclick="resetTag3(1)">Tag 3 zurücksetzen</button>
+                </div>
+                
+                <!-- Tag 3 (initially hidden) -->
+                <div id="tag3_1" class="training-section hidden">
+                    <div class="step">Tag 3</div>
+                    <!-- Pull Hang Timer -->
+                    <div class="pull-hang-timer">
+                        <button id="pullHangButton_1" onclick="startPullHangTimer(1)">Pull Hang Timer</button>
+                        <div id="stopwatch_1" class="stopwatch hidden">00:00:00</div>
+                        <button id="stopButton_1" class="stop-button hidden" onclick="stopPullHangTimer(1)">STOP</button>
+                        <button id="resetTimerButton_1" class="timer-reset-button" onclick="resetPullHangTimer(1)">Timer Button zurücksetzen</button>
+                        <div id="pullHangTime_1" class="training-field spaced">
+                            <label for="training1_pullHangTime">Pull Hang Time</label>
+                            <input type="text" id="training1_pullHangTime" class="readonly-input" readonly>
+                        </div>
+                    </div>
+                    <!-- 2.2. Schritt Woche 1 -->
+                    <div class="training-field spaced">
+                        <label for="training1_step2_2">2.2. Schritt Woche 1</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training1_step2_2" class="readonly-input" readonly>
+                            <span class="formula">+ 60% = Pull-Up Ziel</span>
+                            <input type="number" id="training1_pullUp_plus_2" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training1_pullUp_plus_2_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training1_pullUp_plus_2_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Woche 2 -->
+    <div id="week2" class="week-content" style="display: none;">
+        <!-- Sub-Tabs -->
+        <div class="sub-tabs">
+            <div class="sub-tab active" data-subtab="test2">Test</div>
+            <div class="sub-tab" data-subtab="training2">Training</div>
+        </div>
+        <!-- Sub-Tab Inhalte -->
+        <div class="sub-content">
+            <!-- Test Sub-Tab -->
+            <div class="subtab-content" id="test2" style="display: block;">
+                <!-- 1. Schritt -->
+                <div class="step">1. Schritt</div>
+                <!-- 1-Set Max -->
+                <div class="input-group spaced">
+                    <label for="setMax2">1-Set Max.
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip1_2')">Erläuterung</button>
+<div id="erlaeuterungTooltip1_2" class="erlaeuterung-text">
+    Mache so viele Wiederholungen wie du kannst am Stück
+</div>
+
+                        </span>
+                    </label>
+                    <input type="number" id="setMax2" placeholder="Wdh.">
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmSetMax(2)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetSetMax(2)">
+                    </div>
+                </div>
+                <!-- 2-Minuten Timer -->
+                <div id="timer2min_2" class="timer hidden spaced">2:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung -->
+                <div class="timer-buttons hidden spaced" id="timer2minButtons_2">
+                    <button class="small-button" onclick="pauseTimer(2)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer(2)">Resume</button>
+                    <button class="small-button" onclick="reset2MinTimer(2)">Reset</button>
+                    <button class="small-button" onclick="skip2MinTimer(2)">Skip</button>
+                </div>
+                <!-- 2. Schritt -->
+                <div class="step">2. Schritt
+                    <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip2_2')">Erläuterung</button>
+<div id="erlaeuterungTooltip2_2" class="erlaeuterung-text">
+    Mache nun so viele Wiederholungen mit Pausen in 5 Minuten wie du kannst
+</div>
+                </div>
+                <!-- Start Button für 5-Minuten Timer -->
+                <button id="start5min_2" class="hidden spaced" onclick="start5MinTimer(2)">Start</button>
+                <!-- 5-Minuten Timer -->
+                <div id="timer5min_2" class="timer hidden spaced">5:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung für 5-Minuten Timer -->
+                <div class="timer-buttons hidden spaced" id="timer5minButtons_2">
+                    <button class="small-button" onclick="pauseTimer5(2)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer5(2)">Resume</button>
+                    <button class="small-button" onclick="reset5MinTimer(2)">Reset</button>
+                    <button class="small-button" onclick="skip5MinTimer(2)">Skip</button>
+                </div>
+                <!-- Gesamt Wiederholungen -->
+                <div class="input-group spaced">
+                    <label for="totalReps2">Gesamt Wdh. in 5 Min.</label>
+                    <input type="number" id="totalReps2" placeholder="Wdh." disabled>
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmTotalReps(2)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetTotalReps(2)">
+                    </div>
+                </div>
+                <!-- Automatisch berechnetes Feld -->
+                <div class="calculated-field" id="calculatedValue2"></div>
+            </div>
+            <!-- Training Sub-Tab -->
+            <div class="subtab-content" id="training2" style="display: none;">
+                <!-- Tag 1 -->
+                <div class="step training-section">Tag 1</div>
+                <!-- 1.Schritt Woche 2 -->
+                <div class="training-field spaced">
+                    <label for="training2_step1">1.Schritt Woche 2</label>
+                    <input type="number" id="training2_step1" class="readonly-input" readonly>
+                    <div style="margin-top: 5px; font-size: 14px;">1-Set Max. Test Woche (2)</div>
+                </div>
+                <!-- Chin-Up Ziel -->
+                <div class="training-field spaced">
+                    <label for="training2_chinUp">Chin-Up Ziel</label>
+                    <div>
+                        <span class="formula">x 2 = </span>
+                        <input type="number" id="training2_chinUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training2_chinUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training2_chinUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Chin-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- 2. Schritt Woche 2 -->
+                <div class="training-field spaced">
+                    <label for="training2_step2">2. Schritt Woche 2</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="number" id="training2_step2" class="readonly-input" readonly>
+                        <span class="formula">+ 40% = Pull-Up Ziel</span>
+                        <input type="number" id="training2_pullUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training2_pullUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training2_pullUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- Erledigt Button und Tag 2 zurücksetzen Button -->
+                <button class="erledigt-button" onclick="markTag1Erledigt(2)">Erledigt</button>
+                <button class="zuruecksetzen-button" onclick="resetTag2(2)">Tag 2 zurücksetzen</button>
+                
+                <!-- Tag 2 (initially hidden) -->
+                <div id="tag2_2" class="training-section hidden">
+                    <div class="step">Tag 2</div>
+                    <!-- 1.2. Schritt Woche 2 -->
+                    <div class="training-field spaced">
+                        <label for="training2_step2_1">1.2. Schritt Woche 2</label>
+                        <input type="number" id="training2_step2_1" class="readonly-input" readonly>
+                    </div>
+                    <!-- Commando Pull-Up Ziel -->
+                    <div class="training-field spaced">
+                        <label for="training2_commandoPullUp">Commando Pull-Up Ziel</label>
+                        <div>
+                            <span class="formula">x 2 = </span>
+                            <input type="number" id="training2_commandoPullUp" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training2_commandoPullUp_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training2_commandoPullUp_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Commando Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- 2.1. Schritt Woche 2 -->
+                    <div class="training-field spaced">
+                        <label for="training2_step2_1_plus">2.1. Schritt Woche 2</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training2_step2_1_plus" class="readonly-input" readonly>
+                            <span class="formula">+ 50% = Pull-Up Ziel</span>
+                            <input type="number" id="training2_pullUp_plus" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training2_pullUp_plus_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training2_pullUp_plus_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- Erledigt Button und Tag 3 zurücksetzen Button -->
+                    <button class="erledigt-button" onclick="markTag2Erledigt(2)">Erledigt</button>
+                    <button class="zuruecksetzen-button" onclick="resetTag3(2)">Tag 3 zurücksetzen</button>
+                </div>
+                
+                <!-- Tag 3 (initially hidden) -->
+                <div id="tag3_2" class="training-section hidden">
+                    <div class="step">Tag 3</div>
+                    <!-- Pull Hang Timer -->
+                    <div class="pull-hang-timer">
+                        <button id="pullHangButton_2" onclick="startPullHangTimer(2)">Pull Hang Timer</button>
+                        <div id="stopwatch_2" class="stopwatch hidden">00:00:00</div>
+                        <button id="stopButton_2" class="stop-button hidden" onclick="stopPullHangTimer(2)">STOP</button>
+                        <button id="resetTimerButton_2" class="timer-reset-button" onclick="resetPullHangTimer(2)">Timer Button zurücksetzen</button>
+                        <div id="pullHangTime_2" class="training-field spaced">
+                            <label for="training2_pullHangTime">Pull Hang Time</label>
+                            <input type="text" id="training2_pullHangTime" class="readonly-input" readonly>
+                        </div>
+                    </div>
+                    <!-- 2.2. Schritt Woche 2 -->
+                    <div class="training-field spaced">
+                        <label for="training2_step2_2">2.2. Schritt Woche 2</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training2_step2_2" class="readonly-input" readonly>
+                            <span class="formula">+ 60% = Pull-Up Ziel</span>
+                            <input type="number" id="training2_pullUp_plus_2" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training2_pullUp_plus_2_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training2_pullUp_plus_2_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Woche 3 -->
+    <div id="week3" class="week-content" style="display: none;">
+        <!-- Sub-Tabs -->
+        <div class="sub-tabs">
+            <div class="sub-tab active" data-subtab="test3">Test</div>
+            <div class="sub-tab" data-subtab="training3">Training</div>
+        </div>
+        <!-- Sub-Tab Inhalte -->
+        <div class="sub-content">
+            <!-- Test Sub-Tab -->
+            <div class="subtab-content" id="test3" style="display: block;">
+                <!-- 1. Schritt -->
+                <div class="step">1. Schritt</div>
+                <!-- 1-Set Max -->
+                <div class="input-group spaced">
+                    <label for="setMax3">1-Set Max.
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip1_3')">Erläuterung</button>
+<div id="erlaeuterungTooltip1_3" class="erlaeuterung-text">
+    Mache so viele Wiederholungen wie du kannst am Stück
+</div>
+
+                        </span>
+                    </label>
+                    <input type="number" id="setMax3" placeholder="Wdh.">
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmSetMax(3)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetSetMax(3)">
+                    </div>
+                </div>
+                <!-- 2-Minuten Timer -->
+                <div id="timer2min_3" class="timer hidden spaced">2:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung -->
+                <div class="timer-buttons hidden spaced" id="timer2minButtons_3">
+                    <button class="small-button" onclick="pauseTimer(3)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer(3)">Resume</button>
+                    <button class="small-button" onclick="reset2MinTimer(3)">Reset</button>
+                    <button class="small-button" onclick="skip2MinTimer(3)">Skip</button>
+                </div>
+                <!-- 2. Schritt -->
+                <div class="step">2. Schritt
+                    <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip2_3')">Erläuterung</button>
+<div id="erlaeuterungTooltip2_3" class="erlaeuterung-text">
+    Mache nun so viele Wiederholungen mit Pausen in 5 Minuten wie du kannst
+</div>
+                </div>
+                <!-- Start Button für 5-Minuten Timer -->
+                <button id="start5min_3" class="hidden spaced" onclick="start5MinTimer(3)">Start</button>
+                <!-- 5-Minuten Timer -->
+                <div id="timer5min_3" class="timer hidden spaced">5:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung für 5-Minuten Timer -->
+                <div class="timer-buttons hidden spaced" id="timer5minButtons_3">
+                    <button class="small-button" onclick="pauseTimer5(3)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer5(3)">Resume</button>
+                    <button class="small-button" onclick="reset5MinTimer(3)">Reset</button>
+                    <button class="small-button" onclick="skip5MinTimer(3)">Skip</button>
+                </div>
+                <!-- Gesamt Wiederholungen -->
+                <div class="input-group spaced">
+                    <label for="totalReps3">Gesamt Wdh. in 5 Min.</label>
+                    <input type="number" id="totalReps3" placeholder="Wdh." disabled>
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmTotalReps(3)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetTotalReps(3)">
+                    </div>
+                </div>
+                <!-- Automatisch berechnetes Feld -->
+                <div class="calculated-field" id="calculatedValue3"></div>
+            </div>
+            <!-- Training Sub-Tab -->
+            <div class="subtab-content" id="training3" style="display: none;">
+                <!-- Tag 1 -->
+                <div class="step training-section">Tag 1</div>
+                <!-- 1.Schritt Woche 3 -->
+                <div class="training-field spaced">
+                    <label for="training3_step1">1.Schritt Woche 3</label>
+                    <input type="number" id="training3_step1" class="readonly-input" readonly>
+                    <div style="margin-top: 5px; font-size: 14px;">1-Set Max. Test Woche (3)</div>
+                </div>
+                <!-- Chin-Up Ziel -->
+                <div class="training-field spaced">
+                    <label for="training3_chinUp">Chin-Up Ziel</label>
+                    <div>
+                        <span class="formula">x 2 = </span>
+                        <input type="number" id="training3_chinUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training3_chinUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training3_chinUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Chin-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- 2. Schritt Woche 3 -->
+                <div class="training-field spaced">
+                    <label for="training3_step2">2. Schritt Woche 3</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="number" id="training3_step2" class="readonly-input" readonly>
+                        <span class="formula">+ 40% = Pull-Up Ziel</span>
+                        <input type="number" id="training3_pullUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training3_pullUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training3_pullUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- Erledigt Button und Tag 2 zurücksetzen Button -->
+                <button class="erledigt-button" onclick="markTag1Erledigt(3)">Erledigt</button>
+                <button class="zuruecksetzen-button" onclick="resetTag2(3)">Tag 2 zurücksetzen</button>
+                
+                <!-- Tag 2 (initially hidden) -->
+                <div id="tag2_3" class="training-section hidden">
+                    <div class="step">Tag 2</div>
+                    <!-- 1.2. Schritt Woche 3 -->
+                    <div class="training-field spaced">
+                        <label for="training3_step2_1">1.2. Schritt Woche 3</label>
+                        <input type="number" id="training3_step2_1" class="readonly-input" readonly>
+                    </div>
+                    <!-- Commando Pull-Up Ziel -->
+                    <div class="training-field spaced">
+                        <label for="training3_commandoPullUp">Commando Pull-Up Ziel</label>
+                        <div>
+                            <span class="formula">x 2 = </span>
+                            <input type="number" id="training3_commandoPullUp" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training3_commandoPullUp_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training3_commandoPullUp_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Commando Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- 2.1. Schritt Woche 3 -->
+                    <div class="training-field spaced">
+                        <label for="training3_step2_1_plus">2.1. Schritt Woche 3</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training3_step2_1_plus" class="readonly-input" readonly>
+                            <span class="formula">+ 50% = Pull-Up Ziel</span>
+                            <input type="number" id="training3_pullUp_plus" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training3_pullUp_plus_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training3_pullUp_plus_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- Erledigt Button und Tag 3 zurücksetzen Button -->
+                    <button class="erledigt-button" onclick="markTag2Erledigt(3)">Erledigt</button>
+                    <button class="zuruecksetzen-button" onclick="resetTag3(3)">Tag 3 zurücksetzen</button>
+                </div>
+                
+                <!-- Tag 3 (initially hidden) -->
+                <div id="tag3_3" class="training-section hidden">
+                    <div class="step">Tag 3</div>
+                    <!-- Pull Hang Timer -->
+                    <div class="pull-hang-timer">
+                        <button id="pullHangButton_3" onclick="startPullHangTimer(3)">Pull Hang Timer</button>
+                        <div id="stopwatch_3" class="stopwatch hidden">00:00:00</div>
+                        <button id="stopButton_3" class="stop-button hidden" onclick="stopPullHangTimer(3)">STOP</button>
+                        <button id="resetTimerButton_3" class="timer-reset-button" onclick="resetPullHangTimer(3)">Timer Button zurücksetzen</button>
+                        <div id="pullHangTime_3" class="training-field spaced">
+                            <label for="training3_pullHangTime">Pull Hang Time</label>
+                            <input type="text" id="training3_pullHangTime" class="readonly-input" readonly>
+                        </div>
+                    </div>
+                    <!-- 2.2. Schritt Woche 3 -->
+                    <div class="training-field spaced">
+                        <label for="training3_step2_2">2.2. Schritt Woche 3</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training3_step2_2" class="readonly-input" readonly>
+                            <span class="formula">+ 60% = Pull-Up Ziel</span>
+                            <input type="number" id="training3_pullUp_plus_2" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training3_pullUp_plus_2_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training3_pullUp_plus_2_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Woche 4 -->
+    <div id="week4" class="week-content" style="display: none;">
+        <!-- Sub-Tabs -->
+        <div class="sub-tabs">
+            <div class="sub-tab active" data-subtab="test4">Test</div>
+            <div class="sub-tab" data-subtab="training4">Training</div>
+        </div>
+        <!-- Sub-Tab Inhalte -->
+        <div class="sub-content">
+            <!-- Test Sub-Tab -->
+            <div class="subtab-content" id="test4" style="display: block;">
+                <!-- 1. Schritt -->
+                <div class="step">1. Schritt</div>
+                <!-- 1-Set Max -->
+                <div class="input-group spaced">
+                    <label for="setMax4">1-Set Max.
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip1_4')">Erläuterung</button>
+<div id="erlaeuterungTooltip1_4" class="erlaeuterung-text">
+    Mache so viele Wiederholungen wie du kannst am Stück
+</div>
+
+                        </span>
+                    </label>
+                    <input type="number" id="setMax4" placeholder="Wdh.">
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmSetMax(4)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetSetMax(4)">
+                    </div>
+                </div>
+                <!-- 2-Minuten Timer -->
+                <div id="timer2min_4" class="timer hidden spaced">2:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung -->
+                <div class="timer-buttons hidden spaced" id="timer2minButtons_4">
+                    <button class="small-button" onclick="pauseTimer(4)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer(4)">Resume</button>
+                    <button class="small-button" onclick="reset2MinTimer(4)">Reset</button>
+                    <button class="small-button" onclick="skip2MinTimer(4)">Skip</button>
+                </div>
+                <!-- 2. Schritt -->
+                <div class="step">2. Schritt
+                    <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip2_4')">Erläuterung</button>
+<div id="erlaeuterungTooltip2_4" class="erlaeuterung-text">
+    Mache nun so viele Wiederholungen mit Pausen in 5 Minuten wie du kannst
+</div>
+                </div>
+                <!-- Start Button für 5-Minuten Timer -->
+                <button id="start5min_4" class="hidden spaced" onclick="start5MinTimer(4)">Start</button>
+                <!-- 5-Minuten Timer -->
+                <div id="timer5min_4" class="timer hidden spaced">5:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung für 5-Minuten Timer -->
+                <div class="timer-buttons hidden spaced" id="timer5minButtons_4">
+                    <button class="small-button" onclick="pauseTimer5(4)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer5(4)">Resume</button>
+                    <button class="small-button" onclick="reset5MinTimer(4)">Reset</button>
+                    <button class="small-button" onclick="skip5MinTimer(4)">Skip</button>
+                </div>
+                <!-- Gesamt Wiederholungen -->
+                <div class="input-group spaced">
+                    <label for="totalReps4">Gesamt Wdh. in 5 Min.</label>
+                    <input type="number" id="totalReps4" placeholder="Wdh." disabled>
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmTotalReps(4)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetTotalReps(4)">
+                    </div>
+                </div>
+                <!-- Automatisch berechnetes Feld -->
+                <div class="calculated-field" id="calculatedValue4"></div>
+            </div>
+            <!-- Training Sub-Tab -->
+            <div class="subtab-content" id="training4" style="display: none;">
+                <!-- Tag 1 -->
+                <div class="step training-section">Tag 1</div>
+                <!-- 1.Schritt Woche 4 -->
+                <div class="training-field spaced">
+                    <label for="training4_step1">1.Schritt Woche 4</label>
+                    <input type="number" id="training4_step1" class="readonly-input" readonly>
+                    <div style="margin-top: 5px; font-size: 14px;">1-Set Max. Test Woche (4)</div>
+                </div>
+                <!-- Chin-Up Ziel -->
+                <div class="training-field spaced">
+                    <label for="training4_chinUp">Chin-Up Ziel</label>
+                    <div>
+                        <span class="formula">x 2 = </span>
+                        <input type="number" id="training4_chinUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training4_chinUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training4_chinUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Chin-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- 2. Schritt Woche 4 -->
+                <div class="training-field spaced">
+                    <label for="training4_step2">2. Schritt Woche 4</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="number" id="training4_step2" class="readonly-input" readonly>
+                        <span class="formula">+ 40% = Pull-Up Ziel</span>
+                        <input type="number" id="training4_pullUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training4_pullUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training4_pullUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- Erledigt Button und Tag 2 zurücksetzen Button -->
+                <button class="erledigt-button" onclick="markTag1Erledigt(4)">Erledigt</button>
+                <button class="zuruecksetzen-button" onclick="resetTag2(4)">Tag 2 zurücksetzen</button>
+                
+                <!-- Tag 2 (initially hidden) -->
+                <div id="tag2_4" class="training-section hidden">
+                    <div class="step">Tag 2</div>
+                    <!-- 1.2. Schritt Woche 4 -->
+                    <div class="training-field spaced">
+                        <label for="training4_step2_1">1.2. Schritt Woche 4</label>
+                        <input type="number" id="training4_step2_1" class="readonly-input" readonly>
+                    </div>
+                    <!-- Commando Pull-Up Ziel -->
+                    <div class="training-field spaced">
+                        <label for="training4_commandoPullUp">Commando Pull-Up Ziel</label>
+                        <div>
+                            <span class="formula">x 2 = </span>
+                            <input type="number" id="training4_commandoPullUp" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training4_commandoPullUp_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training4_commandoPullUp_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Commando Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- 2.1. Schritt Woche 4 -->
+                    <div class="training-field spaced">
+                        <label for="training4_step2_1_plus">2.1. Schritt Woche 4</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training4_step2_1_plus" class="readonly-input" readonly>
+                            <span class="formula">+ 50% = Pull-Up Ziel</span>
+                            <input type="number" id="training4_pullUp_plus" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training4_pullUp_plus_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training4_pullUp_plus_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- Erledigt Button und Tag 3 zurücksetzen Button -->
+                    <button class="erledigt-button" onclick="markTag2Erledigt(4)">Erledigt</button>
+                    <button class="zuruecksetzen-button" onclick="resetTag3(4)">Tag 3 zurücksetzen</button>
+                </div>
+                
+                <!-- Tag 3 (initially hidden) -->
+                <div id="tag3_4" class="training-section hidden">
+                    <div class="step">Tag 3</div>
+                    <!-- Pull Hang Timer -->
+                    <div class="pull-hang-timer">
+                        <button id="pullHangButton_4" onclick="startPullHangTimer(4)">Pull Hang Timer</button>
+                        <div id="stopwatch_4" class="stopwatch hidden">00:00:00</div>
+                        <button id="stopButton_4" class="stop-button hidden" onclick="stopPullHangTimer(4)">STOP</button>
+                        <button id="resetTimerButton_4" class="timer-reset-button" onclick="resetPullHangTimer(4)">Timer Button zurücksetzen</button>
+                        <div id="pullHangTime_4" class="training-field spaced">
+                            <label for="training4_pullHangTime">Pull Hang Time</label>
+                            <input type="text" id="training4_pullHangTime" class="readonly-input" readonly>
+                        </div>
+                    </div>
+                    <!-- 2.2. Schritt Woche 4 -->
+                    <div class="training-field spaced">
+                        <label for="training4_step2_2">2.2. Schritt Woche 4</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training4_step2_2" class="readonly-input" readonly>
+                            <span class="formula">+ 60% = Pull-Up Ziel</span>
+                            <input type="number" id="training4_pullUp_plus_2" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training4_pullUp_plus_2_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training4_pullUp_plus_2_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Woche 5 -->
+    <div id="week5" class="week-content" style="display: none;">
+        <!-- Sub-Tabs -->
+        <div class="sub-tabs">
+            <div class="sub-tab active" data-subtab="test5">Test</div>
+            <div class="sub-tab" data-subtab="training5">Training</div>
+        </div>
+        <!-- Sub-Tab Inhalte -->
+        <div class="sub-content">
+            <!-- Test Sub-Tab -->
+            <div class="subtab-content" id="test5" style="display: block;">
+                <!-- 1. Schritt -->
+                <div class="step">1. Schritt</div>
+                <!-- 1-Set Max -->
+                <div class="input-group spaced">
+                    <label for="setMax5">1-Set Max.
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip1_5')">Erläuterung</button>
+<div id="erlaeuterungTooltip1_5" class="erlaeuterung-text">
+    Mache so viele Wiederholungen wie du kannst am Stück
+</div>
+
+                        </span>
+                    </label>
+                    <input type="number" id="setMax5" placeholder="Wdh.">
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmSetMax(5)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetSetMax(5)">
+                    </div>
+                </div>
+                <!-- 2-Minuten Timer -->
+                <div id="timer2min_5" class="timer hidden spaced">2:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung -->
+                <div class="timer-buttons hidden spaced" id="timer2minButtons_5">
+                    <button class="small-button" onclick="pauseTimer(5)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer(5)">Resume</button>
+                    <button class="small-button" onclick="reset2MinTimer(5)">Reset</button>
+                    <button class="small-button" onclick="skip2MinTimer(5)">Skip</button>
+                </div>
+                <!-- 2. Schritt -->
+                <div class="step">2. Schritt
+                    <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungTooltip2_5')">Erläuterung</button>
+<div id="erlaeuterungTooltip2_5" class="erlaeuterung-text">
+    Mache nun so viele Wiederholungen mit Pausen in 5 Minuten wie du kannst
+</div>
+                </div>
+                <!-- Start Button für 5-Minuten Timer -->
+                <button id="start5min_5" class="hidden spaced" onclick="start5MinTimer(5)">Start</button>
+                <!-- 5-Minuten Timer -->
+                <div id="timer5min_5" class="timer hidden spaced">5:00 Minuten verbleiben</div>
+                <!-- Timer-Steuerung für 5-Minuten Timer -->
+                <div class="timer-buttons hidden spaced" id="timer5minButtons_5">
+                    <button class="small-button" onclick="pauseTimer5(5)">Pause</button>
+                    <button class="small-button" onclick="resumeTimer5(5)">Resume</button>
+                    <button class="small-button" onclick="reset5MinTimer(5)">Reset</button>
+                    <button class="small-button" onclick="skip5MinTimer(5)">Skip</button>
+                </div>
+                <!-- Gesamt Wiederholungen -->
+                <div class="input-group spaced">
+                    <label for="totalReps5">Gesamt Wdh. in 5 Min.</label>
+                    <input type="number" id="totalReps5" placeholder="Wdh." disabled>
+                    <div class="buttons">
+                        <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmTotalReps(5)">
+                        <img src="https://img.icons8.com/fluency/48/000000/cancel.png" alt="Zurücksetzen" onclick="resetTotalReps(5)">
+                    </div>
+                </div>
+                <!-- Automatisch berechnetes Feld -->
+                <div class="calculated-field" id="calculatedValue5"></div>
+            </div>
+            <!-- Training Sub-Tab -->
+            <div class="subtab-content" id="training5" style="display: none;">
+                <!-- Tag 1 -->
+                <div class="step training-section">Tag 1</div>
+                <!-- 1.Schritt Woche 5 -->
+                <div class="training-field spaced">
+                    <label for="training5_step1">1.Schritt Woche 5</label>
+                    <input type="number" id="training5_step1" class="readonly-input" readonly>
+                    <div style="margin-top: 5px; font-size: 14px;">1-Set Max. Test Woche (5)</div>
+                </div>
+                <!-- Chin-Up Ziel -->
+                <div class="training-field spaced">
+                    <label for="training5_chinUp">Chin-Up Ziel</label>
+                    <div>
+                        <span class="formula">x 2 = </span>
+                        <input type="number" id="training5_chinUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training5_chinUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training5_chinUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Chin-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- 2. Schritt Woche 5 -->
+                <div class="training-field spaced">
+                    <label for="training5_step2">2. Schritt Woche 5</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="number" id="training5_step2" class="readonly-input" readonly>
+                        <span class="formula">+ 40% = Pull-Up Ziel</span>
+                        <input type="number" id="training5_pullUp" class="readonly-input" readonly>
+                        <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training5_pullUp_explain')">Erläuterung</button>
+                    </div>
+                    <div id="training5_pullUp_explain" class="erlaeuterung-text">
+                        Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                    </div>
+                </div>
+                <!-- Erledigt Button und Tag 2 zurücksetzen Button -->
+                <button class="erledigt-button" onclick="markTag1Erledigt(5)">Erledigt</button>
+                <button class="zuruecksetzen-button" onclick="resetTag2(5)">Tag 2 zurücksetzen</button>
+                
+                <!-- Tag 2 (initially hidden) -->
+                <div id="tag2_5" class="training-section hidden">
+                    <div class="step">Tag 2</div>
+                    <!-- 1.2. Schritt Woche 5 -->
+                    <div class="training-field spaced">
+                        <label for="training5_step2_1">1.2. Schritt Woche 5</label>
+                        <input type="number" id="training5_step2_1" class="readonly-input" readonly>
+                    </div>
+                    <!-- Commando Pull-Up Ziel -->
+                    <div class="training-field spaced">
+                        <label for="training5_commandoPullUp">Commando Pull-Up Ziel</label>
+                        <div>
+                            <span class="formula">x 2 = </span>
+                            <input type="number" id="training5_commandoPullUp" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training5_commandoPullUp_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training5_commandoPullUp_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Commando Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- 2.1. Schritt Woche 5 -->
+                    <div class="training-field spaced">
+                        <label for="training5_step2_1_plus">2.1. Schritt Woche 5</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training5_step2_1_plus" class="readonly-input" readonly>
+                            <span class="formula">+ 50% = Pull-Up Ziel</span>
+                            <input type="number" id="training5_pullUp_plus" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training5_pullUp_plus_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training5_pullUp_plus_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                    <!-- Erledigt Button und Tag 3 zurücksetzen Button -->
+                    <button class="erledigt-button" onclick="markTag2Erledigt(5)">Erledigt</button>
+                    <button class="zuruecksetzen-button" onclick="resetTag3(5)">Tag 3 zurücksetzen</button>
+                </div>
+                
+                <!-- Tag 3 (initially hidden) -->
+                <div id="tag3_5" class="training-section hidden">
+                    <div class="step">Tag 3</div>
+                    <!-- Pull Hang Timer -->
+                    <div class="pull-hang-timer">
+                        <button id="pullHangButton_5" onclick="startPullHangTimer(5)">Pull Hang Timer</button>
+                        <div id="stopwatch_5" class="stopwatch hidden">00:00:00</div>
+                        <button id="stopButton_5" class="stop-button hidden" onclick="stopPullHangTimer(5)">STOP</button>
+                        <button id="resetTimerButton_5" class="timer-reset-button" onclick="resetPullHangTimer(5)">Timer Button zurücksetzen</button>
+                        <div id="pullHangTime_5" class="training-field spaced">
+                            <label for="training5_pullHangTime">Pull Hang Time</label>
+                            <input type="text" id="training5_pullHangTime" class="readonly-input" readonly>
+                        </div>
+                    </div>
+                    <!-- 2.2. Schritt Woche 5 -->
+                    <div class="training-field spaced">
+                        <label for="training5_step2_2">2.2. Schritt Woche 5</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="number" id="training5_step2_2" class="readonly-input" readonly>
+                            <span class="formula">+ 60% = Pull-Up Ziel</span>
+                            <input type="number" id="training5_pullUp_plus_2" class="readonly-input" readonly>
+                            <button class="erlaeuterung-button" onclick="toggleErlaeuterung('training5_pullUp_plus_2_explain')">Erläuterung</button>
+                        </div>
+                        <div id="training5_pullUp_plus_2_explain" class="erlaeuterung-text">
+                            Die Zahl in dem Feld sagt dir, wie viele Wiederholungen du von Pull-Ups schaffen musst. Du kannst die Anzahl mit Pausen erreichen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- Final Test Inhalt -->
+<div id="finalTest" class="week-content" style="display: none;">
+    <!-- Sub-Tabs für Final Test -->
+    <div class="sub-tabs">
+        <div class="sub-tab active" data-subtab="finalTest1">Test 1</div>
+        <div class="sub-tab" data-subtab="finalTest2">Test 2</div>
+    </div>
+    <!-- Sub-Tab Inhalte -->
+    <div class="sub-content">
+        <!-- Test 1 Sub-Tab -->
+        <div class="subtab-content" id="finalTest1" style="display: block;">
+            <!-- Gesamt Testtag 1 -->
+            <div class="input-group spaced">
+                <label for="gesamtTesttag1">Gesamt Testtag 1
+                    
+
+                </label>
+                <input type="number" id="gesamtTesttag1" disabled>
+                <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungFinalTest1')">Erläuterung</button>
+                <div id="erlaeuterungFinalTest1" class="erlaeuterung-text">
+                    Starte den 5 Minuten Timer und erreiche die angegebene Anzahl an Wiederholungen in der Zeit.
+                </div>
+            </div>
+            <!-- 5 Min. Timer Button -->
+            <button id="startTimerFinalTest1" class="pull-hang-timer spaced" onclick="startFinalTest1Timer()">5 Min. Timer</button>
+            <!-- Timer Display -->
+            <div id="finalTest1Timer" class="timer hidden spaced">5:15 Minuten verbleiben</div>
+            <!-- Timer-Steuerung -->
+            <div class="timer-buttons hidden spaced" id="finalTest1TimerButtons">
+                <button class="small-button" onclick="pauseFinalTest1Timer()">Pause</button>
+                <button class="small-button" onclick="resumeFinalTest1Timer()">Resume</button>
+                <button class="small-button" onclick="resetFinalTest1Timer()">Reset</button>
+                <button class="small-button" onclick="skipFinalTest1Timer()">Skip</button>
+            </div>
+            <!-- Anzahl geschafft -->
+            <div id="finalTest1ResultSection" class="input-group spaced hidden">
+                <label for="anzahlGeschafft1">Anzahl geschafft?</label>
+                <input type="number" id="anzahlGeschafft1">
+                <div class="buttons">
+                    <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmFinalTest1Result()">
+                </div>
+                <div id="finalTest1Message" class="calculated-field"></div>
+            </div>
+        </div>
+        <!-- Test 2 Sub-Tab -->
+        <div class="subtab-content" id="finalTest2" style="display: none;">
+            <!-- Mindestziel -->
+            <div class="input-group spaced">
+                <label for="mindestzielFinalTest2">Mindestziel</label>
+                <input type="number" id="mindestzielFinalTest2" disabled>
+                <span class="formula">x 1.5 = </span>
+                <input type="number" id="mindestzielBerechnetFinalTest2" disabled>
+                <button class="erlaeuterung-button" onclick="toggleErlaeuterung('erlaeuterungFinalTest2')">Erläuterung</button>
+                <div id="erlaeuterungFinalTest2" class="erlaeuterung-text">
+                    Mache mindestens 1,5 Mal die Anzahl an Wiederholungen, die du am ersten Tag in einem Set maximal geschafft hast.
+                </div>
+            </div>
+            <!-- Ziel erreicht -->
+            <div class="input-group spaced">
+                <label for="zielErreichtFinalTest2">Ziel erreicht?</label>
+                <input type="number" id="zielErreichtFinalTest2">
+                <div class="buttons">
+                    <img src="https://img.icons8.com/fluency/48/000000/checkmark.png" alt="Bestätigen" onclick="confirmFinalTest2Result()">
+                </div>
+                <div id="finalTest2Message" class="calculated-field"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    // Tab-Logik
+    const tabs = document.querySelectorAll('.tab');
+    const weekContents = document.querySelectorAll('.week-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Entferne aktive Klasse von allen Tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            // Setze aktive Klasse auf das geklickte Tab
+            tab.classList.add('active');
+            // Zeige den entsprechenden Inhalt und verstecke die anderen
+            const target = tab.getAttribute('data-tab');
+            weekContents.forEach(content => {
+                if(content.id === target) {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+            // Initialisiere Final Test Felder, wenn Final Test Tab ausgewählt wird
+            if(target === 'finalTest') {
+                initializeFinalTest1();
+                initializeFinalTest2();
+            }
+        });
+    });
+
+    // Sub-Tab Logik
+    const subTabs = document.querySelectorAll('.sub-tab');
+    const subContents = document.querySelectorAll('.subtab-content');
+
+    subTabs.forEach(subTab => {
+        subTab.addEventListener('click', () => {
+            const parentWeek = subTab.closest('.week-content').id;
+            const weekNumber = parentWeek.replace('week', '');
+            // Entferne aktive Klasse von allen Sub-Tabs in der gleichen Woche
+            const currentWeek = document.querySelector(`#${parentWeek} .sub-tabs`);
+            currentWeek.querySelectorAll('.sub-tab').forEach(st => st.classList.remove('active'));
+            // Setze aktive Klasse auf das geklickte Sub-Tab
+            subTab.classList.add('active');
+            // Zeige den entsprechenden Sub-Tab Inhalt und verstecke die anderen
+            const target = subTab.getAttribute('data-subtab');
+            const weekSubContents = document.querySelectorAll(`#${parentWeek} .subtab-content`);
+            weekSubContents.forEach(content => {
+                if(content.id === target) {
+                    content.style.display = 'block';
+                    // Bei Test Sub-Tab Feldern aktualisieren
+                    if(target.startsWith('test')) {
+                        initializeTestSubTab(weekNumber);
+                    }
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Sub-Tab Logik für Final Test
+    const finalTestTabs = document.querySelectorAll('#finalTest .sub-tab');
+    const finalTestContents = document.querySelectorAll('#finalTest .subtab-content');
+    
+    finalTestTabs.forEach(subTab => {
+        subTab.addEventListener('click', () => {
+            // Entferne aktive Klasse von allen Final Test Sub-Tabs
+            finalTestTabs.forEach(st => st.classList.remove('active'));
+            // Setze aktive Klasse auf das geklickte Sub-Tab
+            subTab.classList.add('active');
+            // Zeige den entsprechenden Sub-Tab Inhalt und verstecke die anderen
+            const target = subTab.getAttribute('data-subtab');
+            finalTestContents.forEach(content => {
+                if(content.id === target) {
+                    content.style.display = 'block';
+                    if(target === 'finalTest1') {
+                        initializeFinalTest1();
+                    } else if(target === 'finalTest2') {
+                        initializeFinalTest2();
+                    }
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Tooltip Logik
+    function toggleTooltip(id) {
+        const tooltip = document.getElementById(id);
+        if(tooltip.style.display === 'block') {
+            tooltip.style.display = 'none';
+        } else {
+            tooltip.style.display = 'block';
+        }
+    }
+
+    // Erläuterung Logik
+    function toggleErlaeuterung(id) {
+        const erlaeuterung = document.getElementById(id);
+        if(erlaeuterung.style.display === 'block') {
+            erlaeuterung.style.display = 'none';
+        } else {
+            erlaeuterung.style.display = 'block';
+        }
+    }
+
+    // 1-Set Max Logik
+    const setMaxValues = {}; // Speichert die setMax Werte pro Woche
+
+    function confirmSetMax(week) {
+        const setMaxInput = document.getElementById(`setMax${week}`);
+        const setMax = setMaxInput.value;
+        if(setMax === '') {
+            alert('Bitte eine Anzahl an Wiederholungen eingeben.');
+            return;
+        }
+        setMaxInput.disabled = true;
+        setMaxValues[week] = parseInt(setMax);
+        // Start 2-Minuten Timer
+        start2MinTimer(week);
+        // Update Training Sub-Tab Felder
+        updateTrainingFields(week);
+        // Speichern in localStorage
+        saveSetMaxValues();
+    }
+
+    function resetSetMax(week) {
+        const setMaxInput = document.getElementById(`setMax${week}`);
+        setMaxInput.value = '';
+        setMaxInput.disabled = false;
+        reset2MinTimer(week);
+        // Reset Training Sub-Tab Felder
+        resetTrainingFields(week);
+        // Entfernen aus setMaxValues
+        delete setMaxValues[week];
+        // Speichern in localStorage
+        saveSetMaxValues();
+    }
+
+    // 2-Minuten Timer Logik
+    let timer2minIntervals = {};
+    let timeLeft2 = {};
+    let timer2minPaused = {};
+
+    function start2MinTimer(week) {
+        const timerDisplay = document.getElementById(`timer2min_${week}`);
+        const timerButtons = document.getElementById(`timer2minButtons_${week}`);
+        timerDisplay.classList.remove('hidden');
+        timerButtons.classList.remove('hidden');
+        timeLeft2[week] = 120; // 2 Minuten in Sekunden
+        updateTimerDisplay2(week);
+        timer2minIntervals[week] = setInterval(() => {
+            if(!timer2minPaused[week]){
+                timeLeft2[week]--;
+                updateTimerDisplay2(week);
+                if(timeLeft2[week] <= 0) {
+                    clearInterval(timer2minIntervals[week]);
+                    timerDisplay.textContent = 'Zeit abgelaufen!';
+                    document.getElementById(`start5min_${week}`).classList.remove('hidden');
+                }
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay2(week) {
+        const timerDisplay = document.getElementById(`timer2min_${week}`);
+        const minutes = Math.floor(timeLeft2[week] / 60);
+        const seconds = timeLeft2[week] % 60;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds} Minuten verbleiben`;
+    }
+
+    function reset2MinTimer(week) {
+        clearInterval(timer2minIntervals[week]);
+        timeLeft2[week] = 120;
+        document.getElementById(`timer2min_${week}`).classList.add('hidden');
+        document.getElementById(`timer2minButtons_${week}`).classList.add('hidden');
+        document.getElementById(`start5min_${week}`).classList.add('hidden');
+    }
+
+    // Pause-Status für 2-Minuten Timer
+    function pauseTimer(week) {
+        timer2minPaused[week] = true;
+    }
+
+    function resumeTimer(week) {
+        timer2minPaused[week] = false;
+    }
+
+    function skip2MinTimer(week) {
+        clearInterval(timer2minIntervals[week]);
+        document.getElementById(`timer2min_${week}`).textContent = 'Timer übersprungen!';
+        document.getElementById(`start5min_${week}`).classList.remove('hidden');
+    }
+
+    // 5-Minuten Timer Logik
+    let timer5minIntervals = {};
+    let timeLeft5 = {};
+    let timer5minPaused = {};
+
+    function start5MinTimer(week) {
+        const timerDisplay = document.getElementById(`timer5min_${week}`);
+        const timerButtons = document.getElementById(`timer5minButtons_${week}`);
+        timerDisplay.classList.remove('hidden');
+        timerButtons.classList.remove('hidden');
+        document.getElementById(`start5min_${week}`).classList.add('hidden');
+        timeLeft5[week] = 300 + 15; // 5 Minuten und 15 Sekunden in Sekunden
+        updateTimerDisplay5(week);
+        timer5minIntervals[week] = setInterval(() => {
+            if(!timer5minPaused[week]){
+                timeLeft5[week]--;
+                updateTimerDisplay5(week);
+                if(timeLeft5[week] <= 0) {
+                    clearInterval(timer5minIntervals[week]);
+                    timerDisplay.textContent = 'Zeit abgelaufen!';
+                    enableTotalReps(week);
+                }
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay5(week) {
+        const timerDisplay = document.getElementById(`timer5min_${week}`);
+        const minutes = Math.floor(timeLeft5[week] / 60);
+        const seconds = timeLeft5[week] % 60;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds} Minuten verbleiben`;
+    }
+
+    function reset5MinTimer(week) {
+        clearInterval(timer5minIntervals[week]);
+        timeLeft5[week] = 300 + 15;
+        document.getElementById(`timer5min_${week}`).textContent = '5:15 Minuten verbleiben';
+        timer5minPaused[week] = false;
+        document.getElementById(`timer5min_${week}`).classList.remove('hidden');
+        document.getElementById(`timer5minButtons_${week}`).classList.remove('hidden');
+    }
+
+    function pauseTimer5(week) {
+        timer5minPaused[week] = true;
+    }
+
+    function resumeTimer5(week) {
+        timer5minPaused[week] = false;
+    }
+
+    function skip5MinTimer(week) {
+        clearInterval(timer5minIntervals[week]);
+        document.getElementById(`timer5min_${week}`).textContent = 'Timer übersprungen!';
+        enableTotalReps(week);
+    }
+
+    // Gesamt Wiederholungen Logik
+    function confirmTotalReps(week) {
+        const totalRepsInput = document.getElementById(`totalReps${week}`);
+        const totalReps = totalRepsInput.value;
+        if(totalReps === '') {
+            alert('Bitte eine Anzahl an Wiederholungen eingeben.');
+            return;
+        }
+        totalRepsInput.disabled = true;
+        calculateValue(week);
+        // Speichern in localStorage
+        saveSetMaxValues();
+    }
+
+    function resetTotalReps(week) {
+        const totalRepsInput = document.getElementById(`totalReps${week}`);
+        totalRepsInput.value = '';
+        totalRepsInput.disabled = false;
+        document.getElementById(`calculatedValue${week}`).textContent = '';
+        // Speichern in localStorage
+        saveSetMaxValues();
+    }
+
+    // Berechnetes Feld
+    function calculateValue(week) {
+        const setMax = parseInt(document.getElementById(`setMax${week}`).value) || 0;
+        const totalReps = parseInt(document.getElementById(`totalReps${week}`).value) || 0;
+        const calculated = setMax + totalReps; // Beispielberechnung
+        document.getElementById(`calculatedValue${week}`).textContent = `Berechneter Wert: ${calculated}`;
+    }
+
+    // Enable Gesamt Wiederholungen Eingabe nach 5-Minuten Timer
+    function enableTotalReps(week) {
+        const totalRepsInput = document.getElementById(`totalReps${week}`);
+        totalRepsInput.disabled = false;
+    }
+
+    // Training Sub-Tab Felder aktualisieren
+    function updateTrainingFields(week) {
+        if(setMaxValues[week] !== undefined) {
+            // 1.Schritt Woche X
+            document.getElementById(`training${week}_step1`).value = setMaxValues[week];
+            // Chin-Up Ziel = setMax * 2
+            document.getElementById(`training${week}_chinUp`).value = setMaxValues[week] * 2;
+            // 2.Schritt Woche X = setMax
+            document.getElementById(`training${week}_step2`).value = setMaxValues[week];
+            // Pull-Up Ziel = 2.Schritt Woche X + 40%
+            const pullUpZiel = Math.round(setMaxValues[week] * 1.4);
+            document.getElementById(`training${week}_pullUp`).value = pullUpZiel;
+        }
+    }
+
+    // Training Sub-Tab Felder zurücksetzen
+    function resetTrainingFields(week) {
+        // 1.Schritt Woche X
+        document.getElementById(`training${week}_step1`).value = '';
+        // Chin-Up Ziel
+        document.getElementById(`training${week}_chinUp`).value = '';
+        // 2.Schritt Woche X
+        document.getElementById(`training${week}_step2`).value = '';
+        // Pull-Up Ziel
+        document.getElementById(`training${week}_pullUp`).value = '';
+        // Verstecke Tag 2 und Tag 3 falls vorhanden
+        document.getElementById(`tag2_${week}`).classList.add('hidden');
+        document.getElementById(`tag3_${week}`).classList.add('hidden');
+    }
+
+    // Markiere Tag 1 als erledigt und zeige Tag 2
+    function markTag1Erledigt(week) {
+        document.getElementById(`tag2_${week}`).classList.remove('hidden');
+        // Berechne und fülle die Felder für Tag 2
+        // 1.2. Schritt Woche X
+        document.getElementById(`training${week}_step2_1`).value = setMaxValues[week];
+        // Commando Pull-Up Ziel = setMax * 2
+        document.getElementById(`training${week}_commandoPullUp`).value = setMaxValues[week] * 2;
+        // 2.1. Schritt Woche X
+        document.getElementById(`training${week}_step2_1_plus`).value = setMaxValues[week];
+        // Pull-Up Ziel = setMax + 50%
+        const pullUpZielPlus = Math.round(setMaxValues[week] * 1.5);
+        document.getElementById(`training${week}_pullUp_plus`).value = pullUpZielPlus;
+    }
+
+    // Markiere Tag 2 als erledigt und zeige Tag 3
+    function markTag2Erledigt(week) {
+        document.getElementById(`tag3_${week}`).classList.remove('hidden');
+        // Berechne und fülle die Felder für Tag 3
+        // 2.2. Schritt Woche X
+        document.getElementById(`training${week}_step2_2`).value = setMaxValues[week];
+        // Pull-Up Ziel = setMax + 60%
+        const pullUpZielPlus60 = Math.round(setMaxValues[week] * 1.6);
+        document.getElementById(`training${week}_pullUp_plus_2`).value = pullUpZielPlus60;
+    }
+
+    // Zurücksetzen von Tag 2
+    function resetTag2(week) {
+        document.getElementById(`tag2_${week}`).classList.add('hidden');
+        // Reset Tag 2 Felder
+        document.getElementById(`training${week}_step2_1`).value = '';
+        document.getElementById(`training${week}_commandoPullUp`).value = '';
+        document.getElementById(`training${week}_step2_1_plus`).value = '';
+        document.getElementById(`training${week}_pullUp_plus`).value = '';
+        // Zurücksetzen von Tag 3 falls sichtbar
+        resetTag3(week);
+    }
+
+    // Zurücksetzen von Tag 3
+    function resetTag3(week) {
+        document.getElementById(`tag3_${week}`).classList.add('hidden');
+        // Reset Tag 3 Felder
+        document.getElementById(`training${week}_step2_2`).value = '';
+        document.getElementById(`training${week}_pullUp_plus_2`).value = '';
+        // Reset Pull Hang Time
+        document.getElementById(`training${week}_pullHangTime`).value = '';
+        // Reset Stopwatch
+        resetStopwatch(week);
+        // Hide Timer Reset Button
+        document.getElementById(`resetTimerButton_${week}`).style.display = 'none';
+    }
+
+    // Speicherung und Laden der setMaxValues mit localStorage
+    function saveSetMaxValues() {
+        localStorage.setItem('setMaxValues', JSON.stringify(setMaxValues));
+    }
+
+    function loadSetMaxValues() {
+        const savedSetMax = localStorage.getItem('setMaxValues');
+        if(savedSetMax) {
+            Object.assign(setMaxValues, JSON.parse(savedSetMax));
+        }
+        // Iteriere durch alle Wochen 1 bis 5
+        for(let week =1; week <=5; week++) {
+            const setMaxInput = document.getElementById(`setMax${week}`);
+            if(setMaxValues[week] !== undefined) {
+                setMaxInput.value = setMaxValues[week];
+                setMaxInput.disabled = true;
+                updateTrainingFields(week);
+            } else {
+                // Setze das Feld leer
+                setMaxInput.value = '';
+            }
+        }
+    }
+
+    // Beim Laden der Seite
+    window.onload = function() {
+        loadSetMaxValues();
+    }
+
+    // Pull Hang Timer Logik
+    let pullHangTimers = {};
+
+    function startPullHangTimer(week) {
+        const stopwatch = document.getElementById(`stopwatch_${week}`);
+        const stopButton = document.getElementById(`stopButton_${week}`);
+        const pullHangButton = document.getElementById(`pullHangButton_${week}`);
+        stopwatch.textContent = '00:00:00';
+        stopwatch.classList.remove('hidden');
+        stopButton.classList.remove('hidden');
+        pullHangButton.classList.add('disabled');
+        pullHangButton.disabled = true;
+
+        let hours = 0;
+        let minutes = 0;
+        let seconds = 0;
+
+        pullHangTimers[week] = setInterval(() => {
+            seconds++;
+            if(seconds === 60) {
+                seconds = 0;
+                minutes++;
+            }
+            if(minutes === 60) {
+                minutes = 0;
+                hours++;
+            }
+            stopwatch.textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    function stopPullHangTimer(week) {
+        clearInterval(pullHangTimers[week]);
+        const stopwatch = document.getElementById(`stopwatch_${week}`);
+        const stopButton = document.getElementById(`stopButton_${week}`);
+        const pullHangTimeInput = document.getElementById(`training${week}_pullHangTime`);
+        pullHangTimeInput.value = stopwatch.textContent;
+        // Hide Stopwatch and Stop Button after 10 seconds
+        setTimeout(() => {
+            stopwatch.classList.add('hidden');
+            stopButton.classList.add('hidden');
+        }, 10000);
+        // Show Timer Reset Button
+        document.getElementById(`resetTimerButton_${week}`).style.display = 'inline-block';
+    }
+
+    function resetPullHangTimer(week) {
+        // Clear the Pull Hang Time
+        document.getElementById(`training${week}_pullHangTime`).value = '';
+        // Reset Stopwatch
+        resetStopwatch(week);
+        // Hide Timer Reset Button
+        document.getElementById(`resetTimerButton_${week}`).style.display = 'none';
+        // Re-enable Pull Hang Timer Button
+        const pullHangButton = document.getElementById(`pullHangButton_${week}`);
+        pullHangButton.classList.remove('disabled');
+        pullHangButton.disabled = false;
+    }
+
+    function resetStopwatch(week) {
+        clearInterval(pullHangTimers[week]);
+        const stopwatch = document.getElementById(`stopwatch_${week}`);
+        const stopButton = document.getElementById(`stopButton_${week}`);
+        stopwatch.textContent = '00:00:00';
+        stopwatch.classList.add('hidden');
+        stopButton.classList.add('hidden');
+    }
+
+    // Test Sub-Tab Initialisierung
+    function initializeTestSubTab(week) {
+        // Hier kannst du zusätzliche Initialisierungen vornehmen, falls erforderlich
+    }
+
+    // Initialisierung der Final Test 1 Felder
+    function initializeFinalTest1() {
+        // Holen des berechneten Wertes aus Woche 1 Test
+        const calculatedValue1Text = document.getElementById('calculatedValue1').textContent;
+        const match = calculatedValue1Text.match(/Berechneter Wert: (\d+)/);
+        const gesamtTesttag1 = document.getElementById('gesamtTesttag1');
+        if(match) {
+            gesamtTesttag1.value = match[1];
+        } else {
+            gesamtTesttag1.value = '';
+        }
+        // Verstecke Ergebnisnachricht und Eingabefeld
+        document.getElementById('finalTest1Message').textContent = '';
+        document.getElementById('finalTest1ResultSection').classList.add('hidden');
+        // Reset Timer Display
+        resetFinalTest1Timer();
+    }
+
+    // Initialisierung der Final Test 2 Felder
+    function initializeFinalTest2() {
+        // Holen des setMax1 Wertes aus Woche 1 Test
+        const setMax1 = parseInt(document.getElementById('setMax1').value) || 0;
+        const mindestziel = document.getElementById('mindestzielFinalTest2');
+        const mindestzielBerechnet = document.getElementById('mindestzielBerechnetFinalTest2');
+        mindestziel.value = setMax1;
+        mindestzielBerechnet.value = Math.round(setMax1 * 1.5);
+        // Verstecke Ergebnisnachricht
+        document.getElementById('finalTest2Message').textContent = '';
+        // Reset Ziel erreicht Eingabe
+        document.getElementById('zielErreichtFinalTest2').value = '';
+    }
+
+    // Final Test 1 Timer Logik
+    let finalTest1TimerInterval;
+    let finalTest1TimeLeft = 315; // 5 Minuten und 15 Sekunden in Sekunden
+    let finalTest1Paused = false;
+
+    function startFinalTest1Timer() {
+        const timerDisplay = document.getElementById('finalTest1Timer');
+        const timerButtons = document.getElementById('finalTest1TimerButtons');
+        timerDisplay.classList.remove('hidden');
+        timerButtons.classList.remove('hidden');
+        document.getElementById('startTimerFinalTest1').classList.add('hidden');
+        finalTest1TimeLeft = 315; // 5:15 Minuten
+
+        updateFinalTest1TimerDisplay();
+
+        finalTest1TimerInterval = setInterval(() => {
+            if(!finalTest1Paused){
+                finalTest1TimeLeft--;
+                updateFinalTest1TimerDisplay();
+                if(finalTest1TimeLeft <= 0) {
+                    clearInterval(finalTest1TimerInterval);
+                    timerDisplay.textContent = 'Zeit abgelaufen!';
+                    document.getElementById('finalTest1ResultSection').classList.remove('hidden');
+                }
+            }
+        }, 1000);
+    }
+
+    function updateFinalTest1TimerDisplay() {
+        const timerDisplay = document.getElementById('finalTest1Timer');
+        const minutes = Math.floor(finalTest1TimeLeft / 60);
+        const seconds = finalTest1TimeLeft % 60;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds} Minuten verbleiben`;
+    }
+
+    function pauseFinalTest1Timer() {
+        finalTest1Paused = true;
+    }
+
+    function resumeFinalTest1Timer() {
+        finalTest1Paused = false;
+    }
+
+    function resetFinalTest1Timer() {
+        clearInterval(finalTest1TimerInterval);
+        finalTest1TimeLeft = 315;
+        document.getElementById('finalTest1Timer').textContent = '5:15 Minuten verbleiben';
+        document.getElementById('finalTest1Timer').classList.remove('hidden');
+        document.getElementById('finalTest1TimerButtons').classList.remove('hidden');
+        document.getElementById('startTimerFinalTest1').classList.remove('hidden');
+        document.getElementById('finalTest1ResultSection').classList.add('hidden');
+    }
+
+    function skipFinalTest1Timer() {
+        clearInterval(finalTest1TimerInterval);
+        document.getElementById('finalTest1Timer').textContent = 'Timer übersprungen!';
+        document.getElementById('finalTest1ResultSection').classList.remove('hidden');
+    }
+
+    // Final Test 1 Ergebnis prüfen
+    function confirmFinalTest1Result() {
+        const gesamtTesttag1 = parseInt(document.getElementById('gesamtTesttag1').value) || 0;
+        const anzahlGeschafft1 = parseInt(document.getElementById('anzahlGeschafft1').value) || 0;
+        const message = document.getElementById('finalTest1Message');
+
+        if(isNaN(anzahlGeschafft1) || anzahlGeschafft1 < 0){
+            alert('Bitte eine gültige Anzahl an Wiederholungen eingeben.');
+            return;
+        }
+
+        if(anzahlGeschafft1 < gesamtTesttag1) {
+            const diff = (((gesamtTesttag1 - anzahlGeschafft1) / gesamtTesttag1) * 100).toFixed(2);
+            message.textContent = `Wiederholungszahl nicht erreicht. Du hast das Ziel um ${diff}% verfehlt.`;
+        } else if(anzahlGeschafft1 === gesamtTesttag1) {
+            message.textContent = `Ziel genau erreicht! Gut gemacht!`;
+        } else {
+            const diff = (((anzahlGeschafft1 - gesamtTesttag1) / gesamtTesttag1) * 100).toFixed(2);
+            message.textContent = `Glückwunsch, Ziel erreicht! Du hast dich um ${diff}% gesteigert.`;
+        }
+    }
+
+    // Final Test 2 Ergebnis prüfen
+    function confirmFinalTest2Result() {
+        const mindestzielBerechnet = parseInt(document.getElementById('mindestzielBerechnetFinalTest2').value) || 0;
+        const zielErreichtFinalTest2 = parseInt(document.getElementById('zielErreichtFinalTest2').value) || 0;
+        const message = document.getElementById('finalTest2Message');
+
+        if(isNaN(zielErreichtFinalTest2) || zielErreichtFinalTest2 < 0){
+            alert('Bitte eine gültige Anzahl an Wiederholungen eingeben.');
+            return;
+        }
+
+        if(zielErreichtFinalTest2 < mindestzielBerechnet) {
+            const diff = (((mindestzielBerechnet - zielErreichtFinalTest2) / mindestzielBerechnet) * 100).toFixed(2);
+            message.textContent = `Ziel nicht erreicht. Du hast das Ziel um ${diff}% verfehlt.`;
+        } else if(zielErreichtFinalTest2 === mindestzielBerechnet) {
+            message.textContent = `Ziel genau erreicht! Gut gemacht!`;
+        } else {
+            const diff = (((zielErreichtFinalTest2 - mindestzielBerechnet) / mindestzielBerechnet) * 100).toFixed(2);
+            message.textContent = `Glückwunsch! Du hast dich um ${diff}% gesteigert.`;
+        }
+    }
+
+    // Training Sub-Tab Initialisierung
+    function initializeTrainingSubTab(week) {
+        // Hier kannst du zusätzliche Initialisierungen vornehmen, falls erforderlich
+    }
+
+</script>
+
+
+
+
+
